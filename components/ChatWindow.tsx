@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 import { Message } from '../types';
 import MessageBubble from './MessageBubble';
@@ -11,11 +10,11 @@ interface ChatWindowProps {
 const TypingIndicator: React.FC = () => (
   <div className="flex justify-start mb-4">
     <div className="px-4 py-3 rounded-2xl rounded-bl-none bg-gray-700 text-white">
-      <div className="flex items-center space-x-1">
-          <span className="text-base">Typing</span>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+      <div className="flex items-center space-x-2">
+        <span className="text-base font-medium">Gemini is typing</span>
+        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
       </div>
     </div>
   </div>
