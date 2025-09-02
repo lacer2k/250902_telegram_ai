@@ -5,6 +5,8 @@ import MessageBubble from './MessageBubble';
 interface ChatWindowProps {
   messages: Message[];
   isLoading: boolean;
+  userBubbleClass: string;
+  aiBubbleClass: string;
 }
 
 const TypingIndicator: React.FC = () => (
@@ -21,7 +23,7 @@ const TypingIndicator: React.FC = () => (
 );
 
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading, userBubbleClass, aiBubbleClass }) => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ messages, isLoading }) => {
     <div className="flex-1 overflow-y-auto p-6 bg-gray-900 bg-opacity-70 backdrop-blur-sm">
       <div className="space-y-4">
         {messages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} />
+          <MessageBubble key={msg.id} message={msg} userBubbleClass={userBubbleClass} aiBubbleClass={aiBubbleClass}/>
         ))}
         {isLoading && <TypingIndicator />}
         <div ref={endOfMessagesRef} />

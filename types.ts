@@ -1,4 +1,3 @@
-
 export type Sender = 'user' | 'ai';
 
 export interface Message {
@@ -7,4 +6,21 @@ export interface Message {
   text?: string;
   audioUrl?: string;
   timestamp: string;
+  isSpoken?: boolean;
+}
+
+export interface Theme {
+  name: string;
+  userBubbleClass: string;
+  aiBubbleClass: string;
+}
+
+export interface Settings {
+  displayName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  backgroundUrl: string;
+  theme: string; // The name of the theme, e.g., "Default"
 }
