@@ -7,6 +7,7 @@ const defaultSettings: Settings = {
   lastName: '',
   email: '',
   phone: '',
+  avatarUrl: '',
   backgroundUrl: BACKGROUNDS[0].url,
   theme: THEMES[0].name,
 };

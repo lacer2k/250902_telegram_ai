@@ -1,7 +1,7 @@
 import React from 'react';
 import { Settings } from '../types';
 import { THEMES, BACKGROUNDS } from '../constants';
-import { XIcon, SpinnerIcon } from './icons';
+import { XIcon, SpinnerIcon, CameraIcon, UserIcon } from './icons';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -27,11 +27,25 @@ const SettingsInput: React.FC<{ label: string; id: keyof Settings; value: string
 );
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, settings, updateSettings, onSave, isSaving }) => {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     updateSettings({ [name]: value });
   };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateSettings({ avatarUrl: reader.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileSelect = () => fileInputRef.current?.click();
 
   return (
     <>
@@ -86,7 +100,30 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, settings
             <section>
               <h3 className="text-lg font-semibold text-indigo-400 mb-4">Personal Details</h3>
               <div className="space-y-4">
-                <SettingsInput label="Display Name" id="displayName" value={settings.displayName} onChange={handleInputChange} />
+                <div className="flex items-center space-x-4">
+                    <div className="relative">
+                        {settings.avatarUrl ? (
+                            <img src={settings.avatarUrl} alt="User Avatar" className="w-20 h-20 rounded-full object-cover bg-gray-700" />
+                        ) : (
+                            <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center">
+                                <UserIcon className="w-12 h-12 text-gray-400" />
+                            </div>
+                        )}
+                        <button onClick={triggerFileSelect} className="absolute bottom-0 right-0 bg-indigo-600 hover:bg-indigo-700 rounded-full p-1.5 border-2 border-gray-800" aria-label="Change avatar">
+                            <CameraIcon className="w-4 h-4 text-white" />
+                        </button>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleAvatarChange}
+                            accept="image/png, image/jpeg, image/gif"
+                            className="hidden"
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <SettingsInput label="Display Name" id="displayName" value={settings.displayName} onChange={handleInputChange} />
+                    </div>
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <SettingsInput label="First Name" id="firstName" value={settings.firstName} onChange={handleInputChange} />
                     <SettingsInput label="Last Name" id="lastName" value={settings.lastName} onChange={handleInputChange} />

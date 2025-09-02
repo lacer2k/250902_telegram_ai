@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { type Chat, type Part } from '@google/genai';
 import ChatHeader from './components/ChatHeader';
@@ -31,7 +32,7 @@ const App: React.FC = () => {
     {
         id: '1',
         sender: 'ai',
-        text: "Hello! I'm Gemini. How can I help you today? You can send me text or hold the mic button to send a voice message.",
+        text: "Hello! I'm the Livio Acerbo AI Assistant. How can I help you today? You can send me text or hold the mic button to send a voice message.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);

@@ -1,8 +1,8 @@
-# Gemini Messenger
+# Livio Acerbo AI Assistant
 
-Gemini Messenger is a sleek, modern, and feature-rich chat application designed to showcase the power and versatility of the Google Gemini API. It provides a user experience similar to popular messaging apps like Telegram, supporting both text and voice-based conversations in a responsive, customizable interface.
+The Livio Acerbo AI Assistant is a sleek, modern, and feature-rich chat application designed to showcase the power and versatility of the Google Gemini API. It provides a user experience similar to popular messaging apps like Telegram, supporting both text and voice-based conversations in a responsive, customizable interface.
 
-![Gemini Messenger Screenshot](https://storage.googleapis.com/aistudio-project-images/250902_gemini_messenger_preview.png)
+![Livio Acerbo AI Assistant Screenshot](https://storage.googleapis.com/aistudio-project-images/250902_gemini_messenger_preview.png)
 
 ---
 
@@ -13,6 +13,7 @@ Gemini Messenger is a sleek, modern, and feature-rich chat application designed 
 - **Voice Transcription:** Voice messages are automatically transcribed and sent to the AI for a relevant, contextual response.
 - **Text-to-Speech (TTS):** AI responses generated from voice inputs can be read aloud, creating a hands-free conversational experience.
 - **Customizable Interface:** A slide-in settings panel allows users to personalize their chat experience.
+  - **Avatar Personalization:** Upload a custom avatar image to represent yourself. The avatar is displayed in the main chat header.
   - **Themes:** Choose from multiple color themes (Default, Forest, Sunset, Ocean) to change the look of message bubbles.
   - **Backgrounds:** Select from a variety of chat backgrounds.
   - **User Profile:** Update personal details like name and contact information.
@@ -34,6 +35,7 @@ Gemini Messenger is a sleek, modern, and feature-rich chat application designed 
 - **Web APIs:**
   - **MediaStream / MediaRecorder API:** For capturing voice input.
   - **Web Speech API:** For text-to-speech functionality.
+  - **FileReader API:** For handling local image uploads.
 - **Runtime:** No build step required; the app runs directly in the browser using ES Modules and an Import Map.
 
 ---

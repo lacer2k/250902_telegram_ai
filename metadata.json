@@ -1,6 +1,6 @@
 {
-  "name": "250902_Gemini Messenger",
-  "description": "A Telegram-like chat application powered by the Gemini API, supporting both text and voice messages in a sleek, modern interface.",
+  "name": "250902_Livio Acerbo AI Assistant",
+  "description": "A personal AI assistant chat application for Livio Acerbo, powered by the Gemini API.",
   "requestFramePermissions": [
     "microphone"
   ]

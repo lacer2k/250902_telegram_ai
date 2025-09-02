@@ -21,6 +21,7 @@ export interface Settings {
   lastName: string;
   email: string;
   phone: string;
+  avatarUrl?: string;
   backgroundUrl: string;
   theme: string; // The name of the theme, e.g., "Default"
 }

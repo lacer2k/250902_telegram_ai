@@ -11,7 +11,7 @@ export function createChatSession(): Chat {
   const chat = ai.chats.create({
     model: 'gemini-2.5-flash',
     config: {
-      systemInstruction: 'You are a helpful and friendly chat assistant named Gemini. Keep your responses concise and conversational, like in a messaging app.',
+      systemInstruction: 'You are a helpful and friendly chat assistant named Livio Acerbo AI Assistant. Keep your responses concise and conversational, like in a messaging app.',
     },
   });
   return chat;
