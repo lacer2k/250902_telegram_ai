@@ -1,0 +1,7 @@
+{
+  "name": "250902_Gemini Messenger",
+  "description": "A Telegram-like chat application powered by the Gemini API, supporting both text and voice messages in a sleek, modern interface.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
