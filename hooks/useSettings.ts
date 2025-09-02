@@ -1,24 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Settings, Theme } from '../types';
-
-export const THEMES: Theme[] = [
-  { name: 'Default', userBubbleClass: 'bg-blue-600', aiBubbleClass: 'bg-gray-700' },
-  { name: 'Forest', userBubbleClass: 'bg-green-600', aiBubbleClass: 'bg-gray-800' },
-  { name: 'Sunset', userBubbleClass: 'bg-purple-600', aiBubbleClass: 'bg-indigo-900' },
-  { name: 'Ocean', userBubbleClass: 'bg-teal-600', aiBubbleClass: 'bg-slate-700' },
-];
-
-export const BACKGROUNDS: { name: string; url: string }[] = [
-    { name: 'Default', url: 'https://picsum.photos/seed/telegrambg/480/900' },
-    { name: 'Mountains', url: 'https://picsum.photos/seed/mountains/480/900' },
-    { name: 'Abstract', url: 'https://picsum.photos/seed/abstract/480/900' },
-    { name: 'Dark', url: 'https://picsum.photos/seed/darkness/480/900' },
-];
-
-const SETTINGS_KEY = 'gemini-messenger-settings';
+import { useState, useEffect, useCallback } from 'react';
+import { Settings } from '../types';
+import { fetchSettings, saveSettings as saveSettingsToApi } from '../services/userService';
+import { THEMES, BACKGROUNDS } from '../constants';
 
 const defaultSettings: Settings = {
-  displayName: '',
+  displayName: 'User',
   firstName: '',
   lastName: '',
   email: '',
@@ -28,33 +14,47 @@ const defaultSettings: Settings = {
 };
 
 export const useSettings = () => {
-  const [settings, setSettings] = useState<Settings>(() => {
-    try {
-      const storedSettings = window.localStorage.getItem(SETTINGS_KEY);
-      if (storedSettings) {
-        // Basic validation to ensure stored settings are not malformed
-        const parsed = JSON.parse(storedSettings);
-        return { ...defaultSettings, ...parsed };
-      }
-    } catch (error) {
-      console.error("Failed to parse settings from localStorage", error);
-    }
-    return defaultSettings;
-  });
+  const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
+  // Fetch initial settings on mount
   useEffect(() => {
+    const loadSettings = async () => {
+      setIsLoading(true);
+      try {
+        const fetchedSettings = await fetchSettings();
+        setSettings(fetchedSettings);
+      } catch (error) {
+        console.error("Failed to load settings:", error);
+        // If loading fails, we'll just use the default settings
+        setSettings(defaultSettings);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  // Update local settings state (does not save to DB)
+  const updateSettings = useCallback((newSettings: Partial<Settings>) => {
+    setSettings((prev) => ({ ...prev, ...newSettings }));
+  }, []);
+
+  // Save current settings to the DB
+  const saveSettings = useCallback(async () => {
+    setIsSaving(true);
     try {
-      window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      await saveSettingsToApi(settings);
     } catch (error) {
-      console.error("Failed to save settings to localStorage", error);
+      console.error("Failed to save settings:", error);
+      // In a real app, you might show an error to the user
+    } finally {
+      setIsSaving(false);
     }
   }, [settings]);
-
-  const updateSettings = (newSettings: Partial<Settings>) => {
-    setSettings((prev) => ({ ...prev, ...newSettings }));
-  };
   
   const activeTheme = THEMES.find(t => t.name === settings.theme) || THEMES[0];
 
-  return { settings, updateSettings, activeTheme };
+  return { settings, isLoading, isSaving, updateSettings, saveSettings, activeTheme };
 };

@@ -1,13 +1,15 @@
 import React from 'react';
 import { Settings } from '../types';
-import { THEMES, BACKGROUNDS } from '../hooks/useSettings';
-import { XIcon } from './icons';
+import { THEMES, BACKGROUNDS } from '../constants';
+import { XIcon, SpinnerIcon } from './icons';
 
 interface SettingsPanelProps {
   isOpen: boolean;
   onClose: () => void;
   settings: Settings;
   updateSettings: (newSettings: Partial<Settings>) => void;
+  onSave: () => void;
+  isSaving: boolean;
 }
 
 const SettingsInput: React.FC<{ label: string; id: keyof Settings; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; }> = ({ label, id, value, onChange }) => (
@@ -24,7 +26,7 @@ const SettingsInput: React.FC<{ label: string; id: keyof Settings; value: string
   </div>
 );
 
-const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, settings, updateSettings }) => {
+const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, settings, updateSettings, onSave, isSaving }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -93,6 +95,27 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ isOpen, onClose, settings
                 <SettingsInput label="Phone Number" id="phone" value={settings.phone} onChange={handleInputChange} />
               </div>
             </section>
+          </div>
+
+          {/* Footer with Save button */}
+          <div className="p-6 border-t border-gray-700">
+             <p className="text-xs text-gray-400 mb-4">
+                By saving your details, you agree that we may use this information for marketing follow-ups and communication.
+             </p>
+            <button
+              onClick={onSave}
+              disabled={isSaving}
+              className="w-full flex justify-center items-center bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-500 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+            >
+              {isSaving ? (
+                <>
+                  <SpinnerIcon className="w-5 h-5 mr-3" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </button>
           </div>
         </div>
       </div>

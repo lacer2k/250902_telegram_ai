@@ -7,6 +7,7 @@ import SettingsPanel from './components/SettingsPanel';
 import { createChatSession, sendMessageToAI } from './services/geminiService';
 import { type Message } from './types';
 import { useSettings } from './hooks/useSettings';
+import { SpinnerIcon } from './components/icons';
 
 const blobUrlToBase64 = async (blobUrl: string): Promise<string> => {
   const response = await fetch(blobUrl);
@@ -36,7 +37,7 @@ const App: React.FC = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { settings, updateSettings, activeTheme } = useSettings();
+  const { settings, updateSettings, saveSettings, isSaving, activeTheme, isLoading: isLoadingSettings } = useSettings();
   const chatRef = useRef<Chat | null>(null);
 
   useEffect(() => {
@@ -70,26 +71,36 @@ const App: React.FC = () => {
     addMessage({ sender: 'user', audioUrl });
     setIsLoading(true);
 
-    if (chatRef.current) {
-      try {
-        const audioBase64 = await blobUrlToBase64(audioUrl);
-        const audioPart: Part = {
-          inlineData: {
-            mimeType: mimeType,
-            data: audioBase64,
-          },
-        };
-        const textPart: Part = { text: "Transcribe this voice message and provide a helpful, conversational response." };
-        const aiResponse = await sendMessageToAI(chatRef.current, [audioPart, textPart]);
-        addMessage({ sender: 'ai', text: aiResponse, isSpoken: true });
-      } catch (error) {
-        console.error("Error processing voice message:", error);
-        addMessage({ sender: 'ai', text: "Sorry, I couldn't process the voice message. Please try again." });
+    try {
+      if (!chatRef.current) {
+        throw new Error("Chat session not initialized.");
       }
+      const audioBase64 = await blobUrlToBase64(audioUrl);
+      const audioPart: Part = {
+        inlineData: {
+          mimeType: mimeType,
+          data: audioBase64,
+        },
+      };
+      const textPart: Part = { text: "Transcribe this voice message and provide a helpful, conversational response." };
+      const aiResponse = await sendMessageToAI(chatRef.current, [audioPart, textPart]);
+      addMessage({ sender: 'ai', text: aiResponse, isSpoken: true });
+    } catch (error) {
+      console.error("Error processing voice message:", error);
+      addMessage({ sender: 'ai', text: "Sorry, I couldn't process the voice message. Please try again." });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
+
+  if (isLoadingSettings) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-900 font-sans text-white text-lg">
+        <SpinnerIcon className="w-8 h-8 mr-4" />
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900 font-sans">
@@ -119,6 +130,8 @@ const App: React.FC = () => {
             onClose={() => setIsSettingsOpen(false)}
             settings={settings}
             updateSettings={updateSettings}
+            onSave={saveSettings}
+            isSaving={isSaving}
         />
     </div>
   );
