@@ -40,11 +40,23 @@ const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { settings, updateSettings, saveSettings, isSaving, activeTheme, isLoading: isLoadingSettings } = useSettings();
   const chatRef = useRef<Chat | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
-    if (!chatRef.current) {
-        chatRef.current = createChatSession();
-    }
+    const initializeChat = async () => {
+      try {
+        if (!chatRef.current) {
+          chatRef.current = await createChatSession();
+        }
+      } catch (e: any) {
+        console.error("Failed to initialize chat session:", e);
+        setError(e.message || "Failed to initialize the AI assistant. Please check the server configuration and refresh the page.");
+      } finally {
+        setIsInitializing(false);
+      }
+    };
+    initializeChat();
   }, []);
 
   const addMessage = (message: Omit<Message, 'id' | 'timestamp'>) => {
@@ -58,24 +70,27 @@ const App: React.FC = () => {
   
   const handleSendText = async (text: string) => {
     addMessage({ sender: 'user', text });
+    if (!chatRef.current) {
+        addMessage({ sender: 'ai', text: "Sorry, the chat session is not properly initialized. Please refresh the page." });
+        return;
+    }
     setIsLoading(true);
     
-    if (chatRef.current) {
-        const aiResponse = await sendMessageToAI(chatRef.current, text);
-        addMessage({ sender: 'ai', text: aiResponse });
-    }
+    const aiResponse = await sendMessageToAI(chatRef.current, text);
+    addMessage({ sender: 'ai', text: aiResponse });
     
     setIsLoading(false);
   };
 
   const handleSendVoice = async (audioUrl: string, mimeType: string) => {
     addMessage({ sender: 'user', audioUrl });
+    if (!chatRef.current) {
+        addMessage({ sender: 'ai', text: "Sorry, the chat session is not properly initialized. Please refresh the page." });
+        return;
+    }
     setIsLoading(true);
 
     try {
-      if (!chatRef.current) {
-        throw new Error("Chat session not initialized.");
-      }
       const audioBase64 = await blobUrlToBase64(audioUrl);
       const audioPart: Part = {
         inlineData: {
@@ -94,11 +109,22 @@ const App: React.FC = () => {
     }
   };
 
-  if (isLoadingSettings) {
+  if (isLoadingSettings || isInitializing) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-900 font-sans text-white text-lg">
         <SpinnerIcon className="w-8 h-8 mr-4" />
-        Loading...
+        {isLoadingSettings ? 'Loading settings...' : 'Initializing AI...'}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-900 font-sans text-white">
+          <div className="w-full h-full sm:w-[420px] sm:h-[840px] md:w-[480px] md:h-[900px] flex flex-col justify-center items-center bg-red-900 bg-opacity-50 p-8 rounded-lg text-center border-4 border-red-700">
+              <h1 className="text-2xl font-bold text-red-300 mb-4">Initialization Error</h1>
+              <p className="text-red-200">{error}</p>
+          </div>
       </div>
     );
   }
